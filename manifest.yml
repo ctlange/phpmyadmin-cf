@@ -1,4 +1,7 @@
 ---
-name: phpmyadmin-cfready
-memory: 1G
-instances: 1
+applications:
+- name: phpmyadmin-cfready
+  memory: 1G
+#  buildpacks:
+#    - php_buildpack
+  instances: 1

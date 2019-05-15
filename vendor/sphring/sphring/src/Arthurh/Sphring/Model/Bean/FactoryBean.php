@@ -35,7 +35,6 @@ class FactoryBean
      */
     private $sphring;
 
-
     /**
      * @param Sphring $sphring
      */
@@ -77,7 +76,7 @@ class FactoryBean
             $set = 'set' . ucfirst($key);
             $bean->$set($value);
         }
-        return $bean;
+        return new ProxyBean($bean);
     }
 
     /**
@@ -157,6 +156,4 @@ class FactoryBean
         }
         unset($this->beansType[$type]);
     }
-
-
 }

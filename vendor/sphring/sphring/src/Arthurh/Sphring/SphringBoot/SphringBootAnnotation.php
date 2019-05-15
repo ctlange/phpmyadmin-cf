@@ -19,12 +19,13 @@ use Arthurh\Sphring\EventDispatcher\Listener\AnnotationMethodCallAfterListener;
 use Arthurh\Sphring\EventDispatcher\Listener\AnnotationMethodCallBeforeListener;
 use Arthurh\Sphring\EventDispatcher\Listener\AnnotationMethodListener;
 use Arthurh\Sphring\EventDispatcher\SphringEventDispatcher;
+use Arthurh\Sphring\Model\Annotation\AfterCallAnnotation;
 use Arthurh\Sphring\Model\Annotation\AfterLoadMethodOnSphringEventAnnotation;
-use Arthurh\Sphring\Model\Annotation\AopAnnotation\AfterCallAnnotation;
-use Arthurh\Sphring\Model\Annotation\AopAnnotation\BeforeCallAnnotation;
 use Arthurh\Sphring\Model\Annotation\AutoWireAnnotation;
+use Arthurh\Sphring\Model\Annotation\BeforeCallAnnotation;
 use Arthurh\Sphring\Model\Annotation\BeforeLoadMethodOnSphringEventAnnotation;
 use Arthurh\Sphring\Model\Annotation\BeforeStartMethodOnSphringEventAnnotation;
+use Arthurh\Sphring\Model\Annotation\ComposerLockFileAnnotation;
 use Arthurh\Sphring\Model\Annotation\LoadContextAnnotation;
 use Arthurh\Sphring\Model\Annotation\MethodInitAnnotation;
 use Arthurh\Sphring\Model\Annotation\RequiredAnnotation;
@@ -87,6 +88,7 @@ class SphringBootAnnotation
     {
         $this->annotationClassListener->register(LoadContextAnnotation::getAnnotationName(), LoadContextAnnotation::class);
         $this->annotationClassListener->register(RootProjectAnnotation::getAnnotationName(), RootProjectAnnotation::class);
+        $this->annotationClassListener->register(ComposerLockFileAnnotation::getAnnotationName(), ComposerLockFileAnnotation::class);
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * Main loader script
@@ -49,12 +48,12 @@ unset($drops, $each_drop);
  * Such scripts must not be loaded on home page.
  *
  */
-$target_blacklist = array(
+$target_blacklist = array (
     'import.php', 'export.php'
 );
 
 // If we have a valid target, let's load that script instead
-if (!empty($_REQUEST['target'])
+if (! empty($_REQUEST['target'])
     && is_string($_REQUEST['target'])
     && ! preg_match('/^index/', $_REQUEST['target'])
     && ! in_array($_REQUEST['target'], $target_blacklist)
@@ -64,7 +63,7 @@ if (!empty($_REQUEST['target'])
     exit;
 }
 
-if (isset($_REQUEST['ajax_request']) && !empty($_REQUEST['access_time'])) {
+if (isset($_REQUEST['ajax_request']) && ! empty($_REQUEST['access_time'])) {
     exit;
 }
 
@@ -107,7 +106,7 @@ if (isset($_POST['collation_connection'])) {
 
 
 // See FAQ 1.34
-if (!empty($_REQUEST['db'])) {
+if (! empty($_REQUEST['db'])) {
     $page = null;
     if (! empty($_REQUEST['table'])) {
         $page = Util::getScriptNameForOption(
@@ -172,7 +171,7 @@ if ($server > 0) {
     // Use the verbose name of the server instead of the hostname
     // if a value is set
     $server_info = '';
-    if (!empty($cfg['Server']['verbose'])) {
+    if (! empty($cfg['Server']['verbose'])) {
         $server_info .= htmlspecialchars($cfg['Server']['verbose']);
         if ($GLOBALS['cfg']['ShowServerInfo']) {
             $server_info .= ' (';
@@ -181,15 +180,15 @@ if ($server > 0) {
     if ($GLOBALS['cfg']['ShowServerInfo'] || empty($cfg['Server']['verbose'])) {
         $server_info .= $GLOBALS['dbi']->getHostInfo();
     }
-    if (!empty($cfg['Server']['verbose']) && $GLOBALS['cfg']['ShowServerInfo']) {
+    if (! empty($cfg['Server']['verbose']) && $GLOBALS['cfg']['ShowServerInfo']) {
         $server_info .= ')';
     }
     $mysql_cur_user_and_host = $GLOBALS['dbi']->fetchValue('SELECT USER();');
 
     // should we add the port info here?
     $short_server_info = (!empty($GLOBALS['cfg']['Server']['verbose'])
-        ? $GLOBALS['cfg']['Server']['verbose']
-        : $GLOBALS['cfg']['Server']['host']);
+                ? $GLOBALS['cfg']['Server']['verbose']
+                : $GLOBALS['cfg']['Server']['host']);
 }
 
 echo '<div id="maincontainer">' , "\n";
@@ -221,9 +220,9 @@ if ($server > 0 || count($cfg['Servers']) > 1
      * Displays the MySQL servers choice form
      */
     if ($cfg['ServerDefault'] == 0
-        || (!$cfg['NavigationDisplayServers']
-            && (count($cfg['Servers']) > 1
-                || ($server == 0 && count($cfg['Servers']) == 1)))
+        || (! $cfg['NavigationDisplayServers']
+        && (count($cfg['Servers']) > 1
+        || ($server == 0 && count($cfg['Servers']) == 1)))
     ) {
         echo '<li id="li_select_server" class="no_bullets" >';
         echo Util::getImage('s_host') , " "

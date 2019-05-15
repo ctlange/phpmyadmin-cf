@@ -299,7 +299,7 @@ class Core
             $dir = isset($GLOBALS['text_dir']) ? $GLOBALS['text_dir'] : 'ltr';
 
             // Displays the error message
-            include './libraries/error.inc.php';
+            include 'libraries/error.inc.php';
         }
         if (! defined('TESTSUITE')) {
             exit;

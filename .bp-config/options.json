@@ -1,0 +1,4 @@
+{
+  "PHP_EXTENSIONS": [ "bz2", "zlib", "curl", "mbstring", "pdo", "pdo_mysql", "gd", "zip", "mysqli", "openssl"],
+  "LIBDIR": "htdocs"
+}

@@ -17,7 +17,7 @@ use \CfCommunity\CfHelper\CfHelper;
  * This is needed for cookie based authentication to encrypt password in
  * cookie. Needs to be 32 chars long.
  */
-$cfg['blowfish_secret'] = 'dfkjdlkgfjdlsdglkhjfdkg'; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+$cfg['blowfish_secret'] = 'dfkjdlkgfjdls123dgjdlsdgl654khjfdkg'; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
 
 /**
  * Servers configuration
@@ -28,12 +28,46 @@ $i = 0;
  * First server
  */
 $i++;
-/* Authentication type */
-$cfg['Servers'][$i]['auth_type'] = 'cookie';
-/* Server parameters */
-$cfg['Servers'][$i]['host'] = 'localhost';
-$cfg['Servers'][$i]['compress'] = false;
-$cfg['Servers'][$i]['AllowNoPassword'] = false;
+
+// CF BEGIN
+if (!CfHelper::getInstance()->isInCloudFoundry()) {
+    die("No isInCloudFoundry.");
+}
+
+$databaseConnector = CfHelper::getInstance()->getDatabaseConnector();
+/*
+if (!($databaseConnector instanceof \CfCommunity\CfHelper\Connectors\DatabaseConnector)) {
+    return;
+}
+*/
+
+$serviceManager = CfHelper::getInstance()->getServiceManager();
+/*
+if (!($serviceManager instanceof \CfCommunity\CfHelper\Services\ServiceManager)) {
+    return;
+}
+*/
+
+$services = $serviceManager->getAllServices();
+foreach ($services as $service) {
+    $mysqlConfig = $databaseConnector->parseDbFromService($service);
+    if (strtolower($mysqlConfig['type']) !== 'mysql') {
+        continue;
+    }
+    $cfg['Servers'][$i]['verbose'] = $service->getName();
+    /* Authentication type */
+    $cfg['Servers'][$i]['auth_type'] = 'cookie';
+    /* Server parameters */
+    $cfg['Servers'][$i]['host'] = $mysqlConfig['host'];
+    $cfg['Servers'][$i]['port'] = $mysqlConfig['port'];
+    $cfg['Servers'][$i]['connect_type'] = 'tcp';
+    $cfg['Servers'][$i]['compress'] = false;
+//    $cfg['Servers'][$i]['extension'] = 'mysqli';
+    $cfg['Servers'][$i]['AllowNoPassword'] = false;
+    $cfg['Servers'][$i]['ssl'] = true;
+    $i++;
+}
+// CF END
 
 /**
  * phpMyAdmin configuration storage settings.

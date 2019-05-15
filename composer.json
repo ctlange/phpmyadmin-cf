@@ -55,7 +55,8 @@
         "twig/twig": "^1.34",
         "twig/extensions": "~1.5.1",
         "symfony/expression-language": "^3.2 || ^2.8",
-        "symfony/polyfill-mbstring": "^1.3"
+        "symfony/polyfill-mbstring": "^1.3",
+        "cloudfoundry-community/cf-helper-php": "1.4.*"
     },
     "conflict": {
         "phpseclib/phpseclib": "2.0.8",
@@ -94,28 +95,4 @@
             "dev-master": "4.8.x-dev"
         }
     }
-  ],
-  "support": {
-    "forum": "https://sourceforge.net/p/phpmyadmin/discussion/Help",
-    "issues": "https://sourceforge.net/p/phpmyadmin/bugs/",
-    "wiki": "http://wiki.phpmyadmin.net/",
-    "source": "https://github.com/phpmyadmin/phpmyadmin"
-  },
-  "require": {
-    "ext-mbstring": "*",
-    "ext-mysqli": "*",
-    "ext-mcrypt": "*",
-    "ext-pdo": "*",
-    "ext-pdo_mysql": "*",
-    "ext-gd": "*",
-    "ext-zip": "*",
-    "cloudfoundry-community/cf-helper-php": "1.4.*",
-    "monolog/monolog": "~1.13"
-  },
-  "require-dev": {
-    "satooshi/php-coveralls": ">=0.6",
-    "phpunit/phpunit": "<4.2",
-    "phpunit/phpunit-selenium": ">=1.2",
-    "scrutinizer/ocular": ">=1.0.0"
-  }
 }

@@ -1,0 +1,9 @@
+.git
+.github
+doc
+examples
+scripts
+test
+setup
+composer.json
+composer.lock
