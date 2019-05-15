@@ -3,10 +3,20 @@ imports:
     - javascript
     - php
 filter:
-    excluded_paths: [libraries/php-gettext/*, libraries/tcpdf/*, libraries/bfShapeFiles/*, PMAStandard/*, libraries/phpseclib/*, libraries/plugins/auth/recaptchalib.php, libraries/plugins/auth/swekey/swekey.php, libraries/sql-formatter/*, js/jquery/*, js/jqplot/*, js/openlayers/*, js/codemirror/*, js/canvg/*, js/tracekit/*, js/OpenStreetMap.js, js/sprintf.js, test/libraries/php-gettext/*, test/libraries/sql-formatter/*]
-tools:
-    external_code_coverage:
-        timeout: 3600 # Timeout in seconds.
-    php_code_sniffer:
-        config:
-            standard: "PMAStandard"
+    excluded_paths:
+        - build/
+        - js/vendor/
+        - node_modules/
+        - tmp/
+        - vendor/
+checks:
+    javascript: true
+build:
+    dependencies:
+        before:
+            - composer install
+            - composer require tecnickcom/tcpdf pragmarx/google2fa bacon/bacon-qr-code samyoul/u2f-php-server
+    tests:
+        override:
+            - php-scrutinizer-run
+            - phpcs-run

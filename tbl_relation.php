@@ -14,142 +14,58 @@
  * @package PhpMyAdmin
  */
 
-/**
- * Gets some core libraries
- */
+use PhpMyAdmin\Controllers\Table\TableRelationController;
+use PhpMyAdmin\Di\Container;
+use PhpMyAdmin\Relation;
+use PhpMyAdmin\Response;
+use PhpMyAdmin\Table;
+use PhpMyAdmin\Util;
+
 require_once 'libraries/common.inc.php';
-require_once 'libraries/index.lib.php';
-require_once 'libraries/tbl_relation.lib.php';
-require_once 'libraries/structure.lib.php';
 
-$response = PMA_Response::getInstance();
+$container = Container::getDefaultContainer();
+$container->factory('PhpMyAdmin\Controllers\Table\TableRelationController');
+$container->alias(
+    'TableRelationController',
+    'PhpMyAdmin\Controllers\Table\TableRelationController'
+);
+$container->set('PhpMyAdmin\Response', Response::getInstance());
+$container->alias('response', 'PhpMyAdmin\Response');
 
-// Send table of column names to populate corresponding dropdowns depending
-// on the current selection
-if (isset($_REQUEST['getDropdownValues'])
-    && $_REQUEST['getDropdownValues'] === 'true'
-) {
-    PMA_sendHtmlForTableOrColumnDropdownList();
-}
-
-$header   = $response->getHeader();
-$scripts  = $header->getScripts();
-$scripts->addFile('tbl_relation.js');
-$scripts->addFile('indexes.js');
-
-/**
- * Gets tables informations
- */
-require_once 'libraries/tbl_info.inc.php';
-
+/* Define dependencies for the concerned controller */
+$db = $container->get('db');
+$table = $container->get('table');
+$dbi = $container->get('dbi');
 $options_array = array(
-    'CASCADE'   => 'CASCADE',
-    'SET_NULL'  => 'SET NULL',
+    'CASCADE' => 'CASCADE',
+    'SET_NULL' => 'SET NULL',
     'NO_ACTION' => 'NO ACTION',
-    'RESTRICT'  => 'RESTRICT',
+    'RESTRICT' => 'RESTRICT',
 );
+$relation = new Relation();
+$cfgRelation = $relation->getRelationsParam();
+$tbl_storage_engine = mb_strtoupper(
+    $dbi->getTable($db, $table)->getStatusInfo('Engine')
+);
+$upd_query = new Table($table, $db, $dbi);
 
-/**
- * Gets the relation settings
- */
-$cfgRelation = PMA_getRelationsParam();
-
-/**
- * Updates
- */
+$dependency_definitions = array(
+    "options_array" => $options_array,
+    "cfgRelation" => $cfgRelation,
+    "tbl_storage_engine" => $tbl_storage_engine,
+    "upd_query" => $upd_query
+);
 if ($cfgRelation['relwork']) {
-    $existrel = PMA_getForeigners($db, $table, '', 'internal');
-}
-if (PMA_Util::isForeignKeySupported($tbl_storage_engine)) {
-    $existrel_foreign = PMA_getForeigners($db, $table, '', 'foreign');
-}
-if ($cfgRelation['displaywork']) {
-    $disp     = PMA_getDisplayField($db, $table);
-} else {
-    $disp = '';
-}
-
-// will be used in the logic for internal relations and foreign keys:
-$multi_edit_columns_name = isset($_REQUEST['fields_name'])
-    ? $_REQUEST['fields_name']
-    : null;
-
-
-$html_output = '';
-
-// u p d a t e s   f o r   I n t e r n a l    r e l a t i o n s
-if (isset($_POST['destination_db']) && $cfgRelation['relwork']) {
-    $html_output .= PMA_handleUpdatesForInternalRelations(
-        $_POST['destination_db'], $multi_edit_columns_name,
-        $_POST['destination_table'],
-        $_POST['destination_column'], $cfgRelation, $db, $table,
-        isset($existrel) ? $existrel : null
+    $dependency_definitions['existrel'] = $relation->getForeigners(
+        $db, $table, '', 'internal'
     );
-} // end if (updates for internal relations)
-
-$multi_edit_columns_name = isset($_REQUEST['foreign_key_fields_name'])
-    ? $_REQUEST['foreign_key_fields_name']
-    : null;
-
-// u p d a t e s    f o r    f o r e i g n    k e y s
-// (for now, one index name only; we keep the definitions if the
-// foreign db is not the same)
-if (isset($_POST['destination_foreign_db'])) {
-    $html_output .= PMA_handleUpdatesForForeignKeys(
-        $_POST['destination_foreign_db'],
-        $multi_edit_columns_name, $_POST['destination_foreign_table'],
-        $_POST['destination_foreign_column'], $options_array, $table,
-        isset($existrel_foreign) ? $existrel_foreign['foreign_keys_data'] : null
+}
+if (Util::isForeignKeySupported($tbl_storage_engine)) {
+    $dependency_definitions['existrel_foreign'] = $relation->getForeigners(
+        $db, $table, '', 'foreign'
     );
-} // end if isset($destination_foreign)
-
-// U p d a t e s   f o r   d i s p l a y   f i e l d
-if ($cfgRelation['displaywork'] && isset($_POST['display_field'])) {
-    $html_output .= PMA_handleUpdateForDisplayField(
-        $disp, $_POST['display_field'], $db, $table, $cfgRelation
-    );
-} // end if
-
-// If we did an update, refresh our data
-if (isset($_POST['destination_db']) && $cfgRelation['relwork']) {
-    $existrel = PMA_getForeigners($db, $table, '', 'internal');
-}
-if (isset($_POST['destination_foreign_db'])
-    && PMA_Util::isForeignKeySupported($tbl_storage_engine)
-) {
-    $existrel_foreign = PMA_getForeigners($db, $table, '', 'foreign');
 }
 
-if ($cfgRelation['displaywork']) {
-    $disp     = PMA_getDisplayField($db, $table);
-}
-
-
-// display secondary level tabs if necessary
-$engine = PMA_Table::sGetStatusInfo($db, $table, 'ENGINE');
-$response->addHTML(PMA_getStructureSecondaryTabs($engine));
-$response->addHTML('<div id="structure_content">');
-
-/**
- * Dialog
- */
-// Now find out the columns of our $table
-// need to use PMA_DatabaseInterface::QUERY_STORE with $GLOBALS['dbi']->numRows()
-// in mysqli
-$columns = $GLOBALS['dbi']->getColumns($db, $table);
-
-// common form
-$html_output .= PMA_getHtmlForCommonForm(
-    $db, $table, $columns, $cfgRelation, $tbl_storage_engine,
-    isset($existrel) ? $existrel : array(),
-    isset($existrel_foreign) ? $existrel_foreign['foreign_keys_data'] : array(),
-    $options_array
-);
-
-if (PMA_Util::isForeignKeySupported($tbl_storage_engine)) {
-    $html_output .= PMA_getHtmlForDisplayIndexes();
-}
-// Render HTML output
-$response->addHTML($html_output);
-
-$response->addHTML('</div>');
+/** @var TableRelationController $controller */
+$controller = $container->get('TableRelationController', $dependency_definitions);
+$controller->indexAction();

@@ -5,25 +5,28 @@
  *
  * @package PhpMyAdmin
  */
+use PhpMyAdmin\Config\PageSettings;
+use PhpMyAdmin\Response;
+use PhpMyAdmin\SqlQueryForm;
 
 /**
  *
  */
 require_once 'libraries/common.inc.php';
 
+PageSettings::showGroup('Sql');
+
 /**
  * Runs common work
  */
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
-$scripts->addFile('functions.js');
 $scripts->addFile('makegrid.js');
-$scripts->addFile('jquery/jquery.uitablefilter.js');
+$scripts->addFile('vendor/jquery/jquery.uitablefilter.js');
 $scripts->addFile('sql.js');
 
 require 'libraries/db_common.inc.php';
-require_once 'libraries/sql_query_form.lib.php';
 
 // After a syntax error, we return to this script
 // with the typed query in the textarea.
@@ -34,10 +37,10 @@ $back = 'db_sql.php';
  * Query box, bookmark, insert data from textfile
  */
 $response->addHTML(
-    PMA_getHtmlForSqlQueryForm(
+    SqlQueryForm::getHtml(
         true, false,
-        isset($_REQUEST['delimiter'])
-        ? htmlspecialchars($_REQUEST['delimiter'])
+        isset($_POST['delimiter'])
+        ? htmlspecialchars($_POST['delimiter'])
         : ';'
     )
 );

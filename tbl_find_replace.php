@@ -8,57 +8,28 @@
  * @package PhpMyAdmin
  */
 
+use PhpMyAdmin\Di\Container;
+use PhpMyAdmin\Response;
+
 /**
  * Gets some core libraries
  */
 require_once 'libraries/common.inc.php';
-require_once 'libraries/TableSearch.class.php';
+require_once 'libraries/tbl_common.inc.php';
 
-$response = PMA_Response::getInstance();
-$table_search = new PMA_TableSearch($db, $table, "replace");
-
-$connectionCharSet = $GLOBALS['dbi']->fetchValue(
-    "SHOW VARIABLES LIKE 'character_set_connection'", 0, 1
+$container = Container::getDefaultContainer();
+$container->factory('PhpMyAdmin\Controllers\Table\TableSearchController');
+$container->alias(
+    'TableSearchController', 'PhpMyAdmin\Controllers\Table\TableSearchController'
 );
-if (isset($_POST['find'])) {
-    $preview = $table_search->getReplacePreview(
-        $_POST['columnIndex'],
-        $_POST['find'],
-        $_POST['replaceWith'],
-        $_POST['useRegex'],
-        $connectionCharSet
-    );
-    $response->addJSON('preview', $preview);
-    exit;
-}
+$container->set('PhpMyAdmin\Response', Response::getInstance());
+$container->alias('response', 'PhpMyAdmin\Response');
 
-$header  = $response->getHeader();
-$scripts = $header->getScripts();
-$scripts->addFile('tbl_find_replace.js');
+$dependency_definitions = array(
+    'searchType' => 'replace',
+    'url_query' => &$url_query
+);
 
-// Show secondary level of tabs
-$htmlOutput  = $table_search->getSecondaryTabs();
-
-if (isset($_POST['replace'])) {
-    $htmlOutput .= $table_search->replace(
-        $_POST['columnIndex'],
-        $_POST['findString'],
-        $_POST['replaceWith'],
-        $_POST['useRegex'],
-        $connectionCharSet
-    );
-    $htmlOutput .= PMA_Util::getMessage(
-        __('Your SQL query has been executed successfully.'),
-        null, 'success'
-    );
-}
-
-if (! isset($goto)) {
-    $goto = $GLOBALS['cfg']['DefaultTabTable'];
-}
-// Defines the url to return to in case of error in the next sql statement
-$params = array('db' => $db, 'table' => $table);
-$err_url = $goto . '?' . PMA_URL_getCommon($params);
-// Displays the find and replace form
-$htmlOutput .= $table_search->getSelectionForm($goto);
-$response->addHTML($htmlOutput);
+/** @var PhpMyAdmin\Controllers\Table\TableSearchController $controller */
+$controller = $container->get('TableSearchController', $dependency_definitions);
+$controller->indexAction();

@@ -1,58 +1,30 @@
 <?php
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
- * Server variables
+ * Handles server variables page.
  *
  * @package PhpMyAdmin
  */
 
+use PhpMyAdmin\Controllers\Server\ServerVariablesController;
+use PhpMyAdmin\Di\Container;
+use PhpMyAdmin\Response;
+
 require_once 'libraries/common.inc.php';
-require_once 'libraries/server_variables.lib.php';
 
-$response = PMA_Response::getInstance();
-$header   = $response->getHeader();
-$scripts  = $header->getScripts();
-$scripts->addFile('server_variables.js');
+$container = Container::getDefaultContainer();
+$container->factory(
+    'PhpMyAdmin\Controllers\Server\ServerVariablesController'
+);
+$container->alias(
+    'ServerVariablesController',
+    'PhpMyAdmin\Controllers\Server\ServerVariablesController'
+);
+$container->set('PhpMyAdmin\Response', Response::getInstance());
+$container->alias('response', 'PhpMyAdmin\Response');
 
-/**
- * Does the common work
- */
-require 'libraries/server_common.inc.php';
-
-/**
- * Array of documentation links
- */
-$variable_doc_links = PMA_getArrayForDocumentLinks();
-
-/**
- * Ajax request
- */
-
-if (isset($_REQUEST['ajax_request']) && $_REQUEST['ajax_request'] == true) {
-    if (isset($_REQUEST['type'])) {
-        if ($_REQUEST['type'] === 'getval') {
-            PMA_getAjaxReturnForGetVal($variable_doc_links);
-        } else if ($_REQUEST['type'] === 'setval') {
-            PMA_getAjaxReturnForSetVal($variable_doc_links);
-        }
-        exit;
-    }
-}
-
-/**
- * Displays the sub-page heading
- */
-$doc_link = PMA_Util::showMySQLDocu('server_system_variables');
-$response->addHtml(PMA_getHtmlForSubPageHeader('variables', $doc_link));
-
-/**
- * Link templates
- */
-$response->addHtml(PMA_getHtmlForLinkTemplates());
-
-/**
- * Displays the page
- */
-$response->addHtml(PMA_getHtmlForServerVariables($variable_doc_links));
-
-exit;
+/** @var ServerVariablesController $controller */
+$controller = $container->get(
+    'ServerVariablesController', array()
+);
+$controller->indexAction();

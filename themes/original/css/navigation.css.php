@@ -8,7 +8,7 @@
  */
 
 // unplanned execution path
-if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
+if (! defined('PHPMYADMIN') && ! defined('TESTSUITE')) {
     exit();
 }
 ?>
@@ -24,7 +24,7 @@ if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
     position: fixed;
     top: 0;
     <?php echo $left; ?>: 0;
-    height: 100%;
+    height: 100vh;
     border-<?php echo $right; ?>: 1px solid gray;
     z-index: 800;
 }
@@ -123,7 +123,7 @@ if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
 
 #pma_navigation_select_database {
     text-align: left;
-    padding: 0px 0px 0px;
+    padding: 0 0 0;
     border: 0;
     margin: 0;
 }
@@ -140,7 +140,7 @@ if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
     border-top: 1px solid #bbb;
     color: #333;
     padding: 4px 6px;
-    margin: 0px 0px 0px;
+    margin: 0 0 0;
     width: 92%;
     font-size: 1.11em;
 }
@@ -155,6 +155,7 @@ if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
 #pma_navigation_tree_content a.hover_show_full {
     position: relative;
     z-index: 100;
+    vertical-align: sub;
 }
 #pma_navigation_tree a {
     color: <?php echo $GLOBALS['cfg']['NaviColor']; ?>;
@@ -196,7 +197,6 @@ if (! defined('PMA_MINIMUM_COMMON') && ! defined('TESTSUITE')) {
 }
 #pma_navigation_tree li {
     white-space: nowrap;
-    padding-bottom: 4px;
     clear: both;
     min-height: 16px;
 }
@@ -346,7 +346,7 @@ li.fast_filter.db_fast_filter {
     text-align: center;
     cursor: pointer;
     z-index: 800;
-    text-shadow: 0px 1px 0px #fff;
+    text-shadow: 0 1px 0 #fff;
     filter: dropshadow(color=#fff, offx=0, offy=1);
     border: 1px solid #888;
 }

@@ -23,7 +23,6 @@ $cfg_db = array();
 $cfg_db['Servers'] = array(
     1 => array(
         'port'         => 'integer',
-        'connect_type' => array('tcp', 'socket'),
         'auth_type'    => array('config', 'http', 'signon', 'cookie'),
         'AllowDeny'    => array(
             'order' => array('', 'deny,allow', 'allow,deny', 'explicit')
@@ -36,22 +35,23 @@ $cfg_db['OBGzip'] = array('auto', true, false);
 $cfg_db['MemoryLimit'] = 'short_string';
 $cfg_db['NavigationLogoLinkWindow'] = array('main', 'new');
 $cfg_db['NavigationTreeDefaultTabTable'] = array(
-    'tbl_structure.php', // fields list
-    'tbl_sql.php',       // SQL form
-    'tbl_select.php',    // search page
-    'tbl_change.php',    // insert row page
-    'sql.php'            // browse page
+    'structure' => __('Structure'), // fields list
+    'sql' => __('SQL'),             // SQL form
+    'search' => __('Search'),       // search page
+    'insert' => __('Insert'),       // insert row page
+    'browse' => __('Browse')        // browse page
 );
 $cfg_db['NavigationTreeDefaultTabTable2'] = array(
-    '', //don't display
-    'tbl_structure.php', // fields list
-    'tbl_sql.php',       // SQL form
-    'tbl_select.php',    // search page
-    'tbl_change.php',    // insert row page
-    'sql.php'            // browse page
+    '' => '', //don't display
+    'structure' => __('Structure'), // fields list
+    'sql' => __('SQL'),             // SQL form
+    'search' => __('Search'),       // search page
+    'insert' => __('Insert'),       // insert row page
+    'browse' => __('Browse')        // browse page
 );
 $cfg_db['NavigationTreeDbSeparator'] = 'short_string';
 $cfg_db['NavigationTreeTableSeparator'] = 'short_string';
+$cfg_db['NavigationWidth'] = 'integer';
 $cfg_db['TableNavigationLinksMode'] = array(
     'icons' => __('Icons'),
     'text'  => __('Text'),
@@ -99,24 +99,25 @@ $cfg_db['RelationalDisplay'] = array(
     'D' => __('display column')
 );
 $cfg_db['DefaultTabServer'] = array(
-    'index.php',               // the welcome page (recommended for multiuser setups)
-    'server_databases.php',    // list of databases
-    'server_status.php',       // runtime information
-    'server_variables.php',    // MySQL server variables
-    'server_privileges.php'    // user management
+    // the welcome page (recommended for multiuser setups)
+    'welcome' => __('Welcome'),
+    'databases' => __('Databases'),    // list of databases
+    'status' => __('Status'),          // runtime information
+    'variables' => __('Variables'),    // MySQL server variables
+    'privileges' => __('Privileges')   // user management
 );
 $cfg_db['DefaultTabDatabase'] = array(
-    'db_structure.php',   // tables list
-    'db_sql.php',         // SQL form
-    'db_search.php',      // search query
-    'db_operations.php'   // operations on database
+    'structure' => __('Structure'),   // tables list
+    'sql' => __('SQL'),               // SQL form
+    'search' => __('Search'),         // search query
+    'operations' => __('Operations')  // operations on database
 );
 $cfg_db['DefaultTabTable'] = array(
-    'tbl_structure.php', // fields list
-    'tbl_sql.php',       // SQL form
-    'tbl_select.php',    // search page
-    'tbl_change.php',    // insert row page
-    'sql.php'            // browse page
+    'structure' => __('Structure'),  // fields list
+    'sql' => __('SQL'),              // SQL form
+    'search' => __('Search'),        // search page
+    'insert' => __('Insert'),        // insert row page
+    'browse' => __('Browse')         // browse page
 );
 $cfg_db['InitialSlidersState'] = array(
     'open'     => __('Open'),
@@ -127,6 +128,11 @@ $cfg_db['SendErrorReports'] = array(
     'ask'     => __('Ask before sending error reports'),
     'always'   => __('Always send error reports'),
     'never' => __('Never send error reports')
+);
+$cfg_db['DefaultForeignKeyChecks'] = array(
+    'default'   => __('Server default'),
+    'enable'    => __('Enable'),
+    'disable'   => __('Disable')
 );
 $cfg_db['Import']['format'] = array(
     'csv',    // CSV
@@ -140,13 +146,13 @@ $cfg_db['Import']['charset'] = array_merge(
 );
 $cfg_db['Import']['sql_compatibility']
     = $cfg_db['Export']['sql_compatibility'] = array(
-    'NONE', 'ANSI', 'DB2', 'MAXDB', 'MYSQL323',
-    'MYSQL40', 'MSSQL', 'ORACLE',
-    // removed; in MySQL 5.0.33, this produces exports that
-    // can't be read by POSTGRESQL (see our bug #1596328)
-    //'POSTGRESQL',
-    'TRADITIONAL'
-);
+        'NONE', 'ANSI', 'DB2', 'MAXDB', 'MYSQL323',
+        'MYSQL40', 'MSSQL', 'ORACLE',
+        // removed; in MySQL 5.0.33, this produces exports that
+        // can't be read by POSTGRESQL (see our bug #1596328)
+        //'POSTGRESQL',
+        'TRADITIONAL'
+    );
 $cfg_db['Import']['csv_terminated'] = 'short_string';
 $cfg_db['Import']['csv_enclosed'] = 'short_string';
 $cfg_db['Import']['csv_escaped'] = 'short_string';
@@ -162,11 +168,13 @@ $cfg_db['Export']['_sod_select'] = array(
 $cfg_db['Export']['method'] = array(
     'quick'          => __('Quick - display only the minimal options to configure'),
     'custom'         => __('Custom - display all possible options to configure'),
-    'custom-no-form' => __('Custom - like above, but without the quick/custom choice')
+    'custom-no-form' => __(
+        'Custom - like above, but without the quick/custom choice'
+    ),
 );
 $cfg_db['Export']['format'] = array(
     'codegen', 'csv', 'excel', 'htmlexcel','htmlword', 'latex', 'ods',
-    'odt', 'pdf', 'sql', 'texytext', 'xls', 'xml', 'yaml'
+    'odt', 'pdf', 'sql', 'texytext', 'xml', 'yaml'
 );
 $cfg_db['Export']['compression'] = array('none', 'zip', 'gzip');
 $cfg_db['Export']['charset'] = array_merge(
@@ -195,8 +203,6 @@ $cfg_db['Export']['sql_insert_syntax'] = array(
     'both'     => __('both of the above'),
     'none'     => __('neither of the above')
 );
-$cfg_db['Export']['xls_null'] = 'short_string';
-$cfg_db['Export']['xlsx_null'] = 'short_string';
 $cfg_db['Export']['htmlword_structure_or_data'] = $cfg_db['Export']['_sod_select'];
 $cfg_db['Export']['htmlword_null'] = 'short_string';
 $cfg_db['Export']['ods_null'] = 'short_string';
@@ -205,6 +211,13 @@ $cfg_db['Export']['odt_structure_or_data'] = $cfg_db['Export']['_sod_select'];
 $cfg_db['Export']['texytext_structure_or_data'] = $cfg_db['Export']['_sod_select'];
 $cfg_db['Export']['texytext_null'] = 'short_string';
 
+$cfg_db['Console']['Mode'] = array(
+    'info', 'show', 'collapse'
+);
+$cfg_db['Console']['Height'] = 'integer';
+$cfg_db['Console']['OrderBy'] = ['exec', 'time', 'count'];
+$cfg_db['Console']['Order'] = ['asc', 'desc'];
+
 /**
  * Default values overrides
  * Use only full paths
@@ -212,7 +225,7 @@ $cfg_db['Export']['texytext_null'] = 'short_string';
 $cfg_db['_overrides'] = array();
 
 /**
- * Basic validator assignments (functions from libraries/config/Validator.class.php
+ * Basic validator assignments (functions from libraries/config/Validator.php
  * and 'validators' object in js/config.js)
  * Use only full paths and form ids
  */
@@ -243,6 +256,7 @@ $cfg_db['_validators'] = array(
     'MaxTableList' => 'validatePositiveNumber',
     'MemoryLimit' => array(array('validateByRegex', '/^(-1|(\d+(?:[kmg])?))$/i')),
     'NavigationTreeTableLevel' => 'validatePositiveNumber',
+    'NavigationWidth' => 'validateNonNegativeNumber',
     'QueryHistoryMax' => 'validatePositiveNumber',
     'RepeatCells' => 'validateNonNegativeNumber',
     'Server' => 'validateServer',
@@ -251,6 +265,7 @@ $cfg_db['_validators'] = array(
     'Servers/1/hide_db' => 'validateRegex',
     'TextareaCols' => 'validatePositiveNumber',
     'TextareaRows' => 'validatePositiveNumber',
+    'FontSize' => array(array('validateByRegex', '/^[0-9.]+(px|em|pt|\%)$/')),
     'TrustedProxies' => 'validateTrustedProxies');
 
 /**
@@ -267,4 +282,3 @@ $cfg_db['_userValidators'] = array(
         array('validateUpperBound', 'value:QueryHistoryMax')
     )
 );
-?>

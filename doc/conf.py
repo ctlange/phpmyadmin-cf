@@ -44,14 +44,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'phpMyAdmin'
-copyright = u'2012 - 2014, The phpMyAdmin devel team'
+copyright = u'2012 - 2018, The phpMyAdmin devel team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '4.5.0-dev'
+version = '4.8.5'
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -127,7 +127,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -302,3 +302,17 @@ from sphinx.highlighting import lexers
 from pygments.lexers.web import PhpLexer
 
 lexers['php'] = PhpLexer(startinline=True)
+
+# Number of retries and timeout for linkcheck
+linkcheck_retries = 10
+linkcheck_timeout = 10
+linkcheck_anchors = False
+linkcheck_ignore = [
+    # Site is often down
+    r'https://software.opensuse.org/package/.*',
+    r'https://pecl.php.net/.*',
+    # Temporarily disabled due to hack
+    r'https://pear.php.net/.*',
+    # 403 Client Error: Forbidden
+    r'https://authy.com/.*',
+]

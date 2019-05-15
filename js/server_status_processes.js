@@ -25,7 +25,7 @@ var processList = {
      *
      * @return void
      */
-    init: function() {
+    init: function () {
         processList.setRefreshLabel();
         if (processList.refreshUrl === null) {
             processList.refreshUrl = 'server_status_processes.php' +
@@ -45,29 +45,30 @@ var processList = {
      *
      * @return void
      */
-    killProcessHandler: function(event) {
+    killProcessHandler: function (event) {
         event.preventDefault();
-        var url = $(this).attr('href');
+        var argSep = PMA_commonParams.get('arg_separator');
+        var params = $(this).getPostData();
+        params += argSep + 'ajax_request=1' + argSep + 'server=' + PMA_commonParams.get('server');
         // Get row element of the process to be killed.
         var $tr = $(this).closest('tr');
-        $.getJSON(url, function(data) {
+        $.post($(this).attr('href'), params, function (data) {
             // Check if process was killed or not.
             if (data.hasOwnProperty('success') && data.success) {
                 // remove the row of killed process.
                 $tr.remove();
                 // As we just removed a row, reapply odd-even classes
                 // to keep table stripes consistent
-                $('#tableprocesslist > tbody > tr').filter(':even')
-                .removeClass('odd').addClass('even');
-                $('#tableprocesslist > tbody > tr').filter(':odd')
-                .removeClass('even').addClass('odd');
+                var $tableProcessListTr = $('#tableprocesslist').find('> tbody > tr');
+                $tableProcessListTr.filter(':even').removeClass('odd').addClass('even');
+                $tableProcessListTr.filter(':odd').removeClass('even').addClass('odd');
                 // Show process killed message
                 PMA_ajaxShowMessage(data.message, false);
             } else {
                 // Show process error message
                 PMA_ajaxShowMessage(data.error, false);
             }
-        });
+        }, 'json');
     },
 
     /**
@@ -77,7 +78,7 @@ var processList = {
      *
      * @return void
      */
-    refresh: function(event) {
+    refresh: function (event) {
         // abort any previous pending requests
         // this is necessary, it may go into
         // multiple loops causing unnecessary
@@ -87,9 +88,9 @@ var processList = {
         if (processList.autoRefresh) {
             var interval = parseInt(processList.refreshInterval, 10) * 1000;
             var urlParams = processList.getUrlParams();
-            processList.refreshRequest = $.get(processList.refreshUrl,
+            processList.refreshRequest = $.post(processList.refreshUrl,
                 urlParams,
-                function(data) {
+                function (data) {
                     if (data.hasOwnProperty('success') && data.success) {
                         $newTable = $(data.message);
                         $('#tableprocesslist').html($newTable.html());
@@ -108,7 +109,7 @@ var processList = {
      *
      * @return void
      */
-    abortRefresh: function() {
+    abortRefresh: function () {
         if (processList.refreshRequest !== null) {
             processList.refreshRequest.abort();
             processList.refreshRequest = null;
@@ -122,11 +123,11 @@ var processList = {
      *
      * @return void
      */
-    setRefreshLabel: function() {
-        var img = 'play.png';
+    setRefreshLabel: function () {
+        var img = 'play';
         var label = PMA_messages.strStartRefresh;
         if (processList.autoRefresh) {
-            img = 'pause.png';
+            img = 'pause';
             label = PMA_messages.strStopRefresh;
             processList.refresh();
         }
@@ -140,18 +141,17 @@ var processList = {
      *
      * @return urlParams - url parameters with autoRefresh request
      */
-    getUrlParams: function() {
+    getUrlParams: function () {
         var urlParams = { 'ajax_request': true, 'refresh': true };
-        if ($('#showExecuting').is(":checked")) {
-            urlParams['showExecuting'] = true;
+        if ($('#showExecuting').is(':checked')) {
+            urlParams.showExecuting = true;
             return urlParams;
         }
         return urlParams;
     }
 };
 
-AJAX.registerOnload('server_status_processes.js', function() {
-
+AJAX.registerOnload('server_status_processes.js', function () {
     processList.init();
     // Bind event handler for kill_process
     $('#tableprocesslist').on(
@@ -160,18 +160,18 @@ AJAX.registerOnload('server_status_processes.js', function() {
         processList.killProcessHandler
     );
     // Bind event handler for toggling refresh of process list
-    $('a#toggleRefresh').on('click', function(event) {
+    $('a#toggleRefresh').on('click', function (event) {
         event.preventDefault();
         processList.autoRefresh = !processList.autoRefresh;
         processList.setRefreshLabel();
     });
     // Bind event handler for change in refresh rate
-    $('#id_refreshRate').on('change', function(event) {
+    $('#id_refreshRate').on('change', function (event) {
         processList.refreshInterval = $(this).val();
         processList.refresh();
     });
     // Bind event handler for table header links
-    $('#tableprocesslist').on('click', 'thead a', function() {
+    $('#tableprocesslist').on('click', 'thead a', function () {
         processList.refreshUrl = $(this).attr('href');
     });
 });
@@ -179,7 +179,7 @@ AJAX.registerOnload('server_status_processes.js', function() {
 /**
  * Unbind all event handlers before tearing down a page
  */
-AJAX.registerTeardown('server_status_processes.js', function() {
+AJAX.registerTeardown('server_status_processes.js', function () {
     $('#tableprocesslist').off('click', 'a.kill_process');
     $('a#toggleRefresh').off('click');
     $('#id_refreshRate').off('change');

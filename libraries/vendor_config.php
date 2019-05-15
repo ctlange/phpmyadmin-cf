@@ -14,6 +14,17 @@ if (! defined('PHPMYADMIN')) {
 }
 
 /**
+ * Path to vendor autoload file. Useful when you want to
+ * have have vendor dependencies somewhere else.
+ */
+define('AUTOLOAD_FILE', './vendor/autoload.php');
+
+/**
+ * Directory where cache files are stored.
+ */
+define('TEMP_DIR', './tmp/');
+
+/**
  * Path to changelog file, can be gzip compressed. Useful when you want to
  * have documentation somewhere else, eg. /usr/share/doc.
  */
@@ -26,23 +37,6 @@ define('CHANGELOG_FILE', './ChangeLog');
 define('LICENSE_FILE', './LICENSE');
 
 /**
- * Path to config file generated using setup script.
- */
-define('SETUP_CONFIG_FILE', './config/config.inc.php');
-
-/**
- * Whether setup requires writable directory where config
- * file will be generated.
- */
-define('SETUP_DIR_WRITABLE', true);
-
-/**
- * Directory where examples reside. Useful when you want to include
- * the examples directory with documentation, eg. /usr/share/doc.
- */
-define('EXAMPLES_DIR', './examples/');
-
-/**
  * Directory where SQL scripts to create/upgrade configuration storage reside.
  */
 define('SQL_DIR', './sql/');
@@ -52,7 +46,7 @@ define('SQL_DIR', './sql/');
  * It is not used directly in code, just a convenient
  * define used further in this file.
  */
-define('CONFIG_DIR', './');
+define('CONFIG_DIR', '');
 
 /**
  * Filename of a configuration file.
@@ -75,25 +69,12 @@ define('CUSTOM_FOOTER_FILE', CONFIG_DIR . 'config.footer.inc.php');
 define('VERSION_CHECK_DEFAULT', true);
 
 /**
- * Path to gettext.inc file. Useful when you want php-gettext somewhere else,
- * eg. /usr/share/php/gettext/gettext.inc.
+ * Path to files with compiled locales (*.mo)
  */
-define('GETTEXT_INC', './libraries/php-gettext/gettext.inc');
-/**
- * Path to tcpdf.php file. Useful when you want to use system tcpdf,
- * eg. /usr/share/php/tcpdf/tcpdf.php.
- */
-define('TCPDF_INC', './libraries/tcpdf/tcpdf.php');
-
-/**
- * Path to the phpseclib. Useful when you want to use system phpseclib.
- */
-define('PHPSECLIB_INC_DIR', './libraries/phpseclib/');
+define('LOCALE_PATH', './locale/');
 
 /**
  * Avoid referring to nonexistent files (causes warnings when open_basedir
  * is used)
  */
 define('K_PATH_IMAGES', '');
-
-?>

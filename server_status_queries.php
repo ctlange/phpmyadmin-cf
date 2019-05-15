@@ -7,46 +7,42 @@
  * @package PhpMyAdmin
  */
 
+use PhpMyAdmin\Response;
+use PhpMyAdmin\Message;
+use PhpMyAdmin\Server\Status\Data;
+use PhpMyAdmin\Server\Status\Queries;
+
 require_once 'libraries/common.inc.php';
 require_once 'libraries/server_common.inc.php';
-require_once 'libraries/ServerStatusData.class.php';
-require_once 'libraries/server_status_queries.lib.php';
+require_once 'libraries/replication.inc.php';
 
-if (PMA_DRIZZLE) {
-    $GLOBALS['replication_info'] = array();
-    $GLOBALS['replication_info']['master']['status'] = false;
-    $GLOBALS['replication_info']['slave']['status'] = false;
-} else {
-    include_once 'libraries/replication.inc.php';
-    include_once 'libraries/replication_gui.lib.php';
-}
+$serverStatusData = new Data();
 
-$ServerStatusData = new PMA_ServerStatusData();
-
-$response = PMA_Response::getInstance();
+$response = Response::getInstance();
 $header   = $response->getHeader();
 $scripts  = $header->getScripts();
-$scripts->addFile('server_status_queries.js');
-
-/* < IE 9 doesn't support canvas natively */
-if (PMA_USR_BROWSER_AGENT == 'IE' && PMA_USR_BROWSER_VER < 9) {
-    $scripts->addFile('jqplot/excanvas.js');
-}
 
 // for charting
-$scripts->addFile('jqplot/jquery.jqplot.js');
-$scripts->addFile('jqplot/plugins/jqplot.pieRenderer.js');
-$scripts->addFile('jqplot/plugins/jqplot.canvasTextRenderer.js');
-$scripts->addFile('jqplot/plugins/jqplot.canvasAxisLabelRenderer.js');
-$scripts->addFile('jqplot/plugins/jqplot.dateAxisRenderer.js');
-$scripts->addFile('jqplot/plugins/jqplot.highlighter.js');
-$scripts->addFile('jqplot/plugins/jqplot.cursor.js');
-$scripts->addFile('jquery/jquery.tablesorter.js');
+$scripts->addFile('chart.js');
+$scripts->addFile('vendor/jqplot/jquery.jqplot.js');
+$scripts->addFile('vendor/jqplot/plugins/jqplot.pieRenderer.js');
+$scripts->addFile('vendor/jqplot/plugins/jqplot.highlighter.js');
+$scripts->addFile('vendor/jqplot/plugins/jqplot.enhancedPieLegendRenderer.js');
+$scripts->addFile('vendor/jquery/jquery.tablesorter.js');
 $scripts->addFile('server_status_sorter.js');
+$scripts->addFile('server_status_queries.js');
 
 // Add the html content to the response
 $response->addHTML('<div>');
-$response->addHTML($ServerStatusData->getMenuHtml());
-$response->addHTML(PMA_getHtmlForQueryStatistics($ServerStatusData));
+$response->addHTML($serverStatusData->getMenuHtml());
+if ($serverStatusData->dataLoaded) {
+    $response->addHTML(Queries::getHtmlForQueryStatistics($serverStatusData));
+} else {
+    $response->addHTML(
+        Message::error(
+            __('Not enough privilege to view query statistics.')
+        )->getDisplay()
+    );
+}
 $response->addHTML('</div>');
 exit;

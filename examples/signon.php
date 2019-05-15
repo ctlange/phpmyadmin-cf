@@ -11,14 +11,18 @@
  * @subpackage Example
  */
 
+/* Use cookies for session */
+ini_set('session.use_cookies', 'true');
+/* Change this to true if using phpMyAdmin over https */
+$secure_cookie = false;
 /* Need to have cookie visible from parent directory */
-session_set_cookie_params(0, '/', '', false);
+session_set_cookie_params(0, '/', '', $secure_cookie, true);
 /* Create signon session */
 $session_name = 'SignonSession';
 session_name($session_name);
 // Uncomment and change the following line to match your $cfg['SessionSavePath']
 //session_save_path('/foobar');
-session_start();
+@session_start();
 
 /* Was data posted? */
 if (isset($_POST['user'])) {
@@ -31,13 +35,13 @@ if (isset($_POST['user'])) {
     $_SESSION['PMA_single_signon_cfgupdate'] = array('verbose' => 'Signon test');
     $id = session_id();
     /* Close that session */
-    session_write_close();
+    @session_write_close();
     /* Redirect to phpMyAdmin (should use absolute URL here!) */
     header('Location: ../index.php');
 } else {
     /* Show simple form */
     header('Content-Type: text/html; charset=utf-8');
-    echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+    echo '<?xml version="1.0" encoding="utf-8"?>' , "\n";
     ?>
     <!DOCTYPE HTML>
     <html lang="en" dir="ltr">

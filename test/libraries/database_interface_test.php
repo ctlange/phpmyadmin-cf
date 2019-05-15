@@ -9,17 +9,15 @@
 /*
  * Include to test.
  */
-require_once 'libraries/php-gettext/gettext.inc';
-require_once 'libraries/database_interface.inc.php';
-require_once 'libraries/Tracker.class.php';
-require_once 'libraries/charset_conversion.lib.php';
+
+ use PHPUnit\Framework\TestCase;
 
 /**
  * Tests basic functionality of dummy dbi driver
  *
  * @package PhpMyAdmin-test
  */
-class PMA_DBI_Test extends PHPUnit_Framework_TestCase
+class PMA_DBI_Test extends TestCase
 {
     /**
      * Configures test parameters.
@@ -28,7 +26,9 @@ class PMA_DBI_Test extends PHPUnit_Framework_TestCase
      */
     function setup()
     {
+        $GLOBALS['cfg']['DBG']['sql'] = false;
         $GLOBALS['cfg']['IconvExtraParams'] = '';
+        $GLOBALS['server'] = 1;
     }
 
     /**
@@ -40,7 +40,7 @@ class PMA_DBI_Test extends PHPUnit_Framework_TestCase
      */
     function testQuery()
     {
-        $this->assertEquals(0, $GLOBALS['dbi']->tryQuery('SELECT 1'));
+        $this->assertEquals(1000, $GLOBALS['dbi']->tryQuery('SELECT 1'));
     }
 
     /**
@@ -116,7 +116,7 @@ class PMA_DBI_Test extends PHPUnit_Framework_TestCase
             array(1234, 'foobar', '#1234 - foobar'),
             array(
                 2002, 'foobar',
-                '#2002 - foobar<br />The server is not responding (or the local '
+                '#2002 - foobar &mdash; The server is not responding (or the local '
                 . 'server\'s socket is not correctly configured).'
             ),
         );
